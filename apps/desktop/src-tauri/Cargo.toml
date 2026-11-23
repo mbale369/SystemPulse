@@ -1,0 +1,20 @@
+[package]
+name = "systempulse-desktop"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+systempulse-core = { path = "../../../crates/core" }
+systempulse-collector = { path = "../../../crates/collector" }
+systempulse-alerts = { path = "../../../crates/alerts" }
+serde = { version = "1", features = ["derive"] }
+
+[lints.rust]
+unsafe_code = "forbid"

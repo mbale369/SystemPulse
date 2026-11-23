@@ -1,0 +1,22 @@
+[package]
+name = "systempulse-mcp-server"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "systempulse-mcp"
+path = "src/main.rs"
+
+[dependencies]
+rmcp = { version = "=3.8.0", default-features = false, features = ["server", "transport-io", "schemars"] }
+tokio = { version = "1", features = ["rt", "macros", "io-util", "io-std", "sync", "time"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = { version = "1", features = ["derive"] }
+systempulse-core = { path = "../core" }
+systempulse-collector = { path = "../collector" }
+systempulse-alerts = { path = "../alerts" }
+
+[lints]
+workspace = true

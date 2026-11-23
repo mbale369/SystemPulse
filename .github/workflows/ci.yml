@@ -1,0 +1,82 @@
+name: CI
+
+# Manual until the repository visibility and Actions budget are approved.
+on: [workflow_dispatch]
+permissions:
+  contents: read
+env:
+  CARGO_BUILD_JOBS: "2"
+
+jobs:
+  headless:
+    name: Headless (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025, macos-15]
+      max-parallel: 1
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Install project toolchain
+        run: rustup toolchain install stable --profile minimal --component rustfmt,clippy
+      - run: rustc --version
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: cargo check --workspace --locked
+      - run: cargo build --workspace --locked
+      - run: python scripts/test-mcp.py
+
+  frontend:
+    name: Frontend (ubuntu-24.04)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/desktop
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.22.2"
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+
+  desktop-build:
+    name: Tauri compile (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-24.04, windows-2025, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Install project toolchain
+        run: rustup toolchain install stable --profile minimal --component rustfmt,clippy
+      - name: Install Tauri Linux prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev libxdo-dev libayatana-appindicator3-dev \
+            librsvg2-dev libssl-dev build-essential pkg-config
+      - name: Compile desktop crate
+        working-directory: apps/desktop/src-tauri
+        run: cargo clippy --all-targets --locked -- -D warnings
+      - name: Test desktop logic without opening a window
+        working-directory: apps/desktop/src-tauri
+        run: cargo test --locked

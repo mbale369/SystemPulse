@@ -1,0 +1,32 @@
+# Rust
+/target/
+**/*.rs.bk
+# Node / Tauri
+**/node_modules/
+**/dist/
+**/.vite/
+**/src-tauri/target/
+**/src-tauri/gen/schemas/
+# Artefacts de tests navigateur locaux
+**/test-artifacts/
+# Données locales et secrets
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+# Never version live telemetry, databases, certificates or local audit tools.
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.pem
+*.key
+*.p12
+*.pfx
+systempulse-session.json
+__pycache__/
+*.pyc
+# Cargo.lock et package-lock.json sont versionnés pour les applications.

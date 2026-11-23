@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Generated dependencies, build outputs and Git internals only"
+paths = ['''(^|/)(node_modules|target|dist|test-artifacts|\.git)/''', '''(^|/)src-tauri/gen/schemas/''']

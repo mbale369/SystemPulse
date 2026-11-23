@@ -1,0 +1,12 @@
+[package]
+name = "systempulse-collector"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+systempulse-core = { path = "../core" }
+systempulse-platforms = { path = "../platforms" }
