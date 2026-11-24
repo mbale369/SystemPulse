@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fixture } from '../src/fixtures.ts';
+import {loadPreferences,savePreferences,resolveLanguage,resolveTheme} from '../src/preferences.ts';
 import { validateHealthReport, isMetric } from '../src/model.ts';
 import { available, ratio, pushHistory, safeText, validateSnapshot, filterProcesses, HISTORY_LIMIT, type Metric } from '../src/model.ts';
 const metric=(value:number|null,availability='available'):Metric=>({id:'cpu',kind:'cpu',value,unit:'percent',timestamp_ms:1,source:'fake',availability:availability as Metric['availability'],quality:'valid',age_ms:0});
@@ -32,4 +33,32 @@ test('diagnostics reject malformed fields before rendering',()=>{
 });
 test('bounded deterministic adversarial corpus never bypasses required memory fields',()=>{
   for(let i=0;i<1000;i++) {const s=fixture(i);s.memory=([null,{},[],{used_bytes:metric(1)}][i%4]) as never;assert.throws(()=>validateSnapshot(s));}
+});
+test('system preferences default safely and migrate existing manual choices',()=>{
+  assert.deepEqual(loadPreferences(),{language:'system',theme:'system'});
+  const stored=new Map([['language','en'],['theme','dark']]);
+  const storage={getItem:(key:string)=>stored.get(key)??null,setItem:(key:string,value:string)=>{stored.set(key,value);}};
+  assert.deepEqual(loadPreferences(storage),{language:'en',theme:'dark'});
+  savePreferences({language:'system',theme:'system'},storage);
+  assert.deepEqual(loadPreferences(storage),{language:'system',theme:'system'});
+  stored.set('language','invalid');stored.set('theme','invalid');
+  assert.deepEqual(loadPreferences(storage),{language:'system',theme:'system'});
+});
+test('system language follows locale priority, regional tags and supported fallback',()=>{
+  assert.equal(resolveLanguage('system',['en-US','fr-FR']),'en');
+  assert.equal(resolveLanguage('system',['FR_cd','en-US']),'fr');
+  assert.equal(resolveLanguage('system',['de-DE','en-GB']),'en');
+  assert.equal(resolveLanguage('system',['de-DE']),'fr');
+  assert.equal(resolveLanguage('system',[]),'fr');
+  assert.equal(resolveLanguage('fr',['en-US']),'fr');
+  assert.equal(resolveLanguage('en',['fr-FR']),'en');
+});
+test('system appearance follows changes but explicit choices remain stable',()=>{
+  assert.equal(resolveTheme('system',true),'dark');assert.equal(resolveTheme('system',false),'light');
+  assert.equal(resolveTheme('dark',false),'dark');assert.equal(resolveTheme('light',true),'light');
+});
+test('unavailable preference storage neither crashes nor prevents in-memory settings',()=>{
+  const storage={getItem:()=>{throw new Error('denied');},setItem:()=>{throw new Error('denied');}};
+  assert.deepEqual(loadPreferences(storage),{language:'system',theme:'system'});
+  assert.doesNotThrow(()=>savePreferences({language:'en',theme:'light'},storage));
 });

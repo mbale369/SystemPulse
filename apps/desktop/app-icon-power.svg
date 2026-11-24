@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>SystemPulse — puissance maîtrisée</title>
+  <defs>
+    <linearGradient id="case" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#192d46"/><stop offset="1" stop-color="#080f1d"/>
+    </linearGradient>
+    <linearGradient id="energy" x1="0" y1="1" x2="1" y2="0">
+      <stop stop-color="#38e6bc"/><stop offset="0.55" stop-color="#42d8ff"/><stop offset="1" stop-color="#8c9cff"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="976" height="976" rx="222" fill="url(#case)"/>
+  <rect x="42" y="42" width="940" height="940" rx="204" fill="none" stroke="#304a64" stroke-width="4"/>
+  <path d="M354 200v72m106-72v72m106-72v72m106-72v72M354 752v72m106-72v72m106-72v72m106-72v72M200 354h72m-72 106h72m-72 106h72m-72 106h72M752 354h72m-72 106h72m-72 106h72m-72 106h72" stroke="#48809a" stroke-width="24" stroke-linecap="round"/>
+  <rect x="272" y="272" width="480" height="480" rx="86" fill="#101d30" stroke="url(#energy)" stroke-width="22"/>
+  <rect x="310" y="310" width="404" height="404" rx="58" fill="#10263a" stroke="#264a61" stroke-width="3"/>
+  <path d="M174 530h175l73-138 96 260 93-225 66 103h173" fill="none" stroke="#0a1829" stroke-width="66" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M174 530h175l73-138 96 260 93-225 66 103h173" fill="none" stroke="url(#energy)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="850" cy="530" r="24" fill="#c0fff1"/>
+  <path d="M784 158l-25 45h33l-24 45 69-61h-37l23-29z" fill="#c0fff1"/>
+</svg>

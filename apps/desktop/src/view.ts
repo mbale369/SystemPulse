@@ -12,7 +12,10 @@ export function panel(title: string, hint?: string): HTMLElement {
   const p = el('section','panel'); p.append(el('h2','',title)); if (hint) p.append(el('p','muted',hint)); return p;
 }
 export function metricCard(title: string, metric: Metric | undefined, language: Language, unit = '%'): HTMLElement {
-  const t = messages[language], card = el('section','metric'); card.append(el('h2','',title));
+  const t = messages[language], card = el('section','metric');
+  const keys:Record<string,string>={'cpu.usage':'cpu','memory.used':'ram','cpu.temperature':'temperature','swap.used':'swap'};
+  if(metric&&keys[metric.id])card.dataset.measureKey=keys[metric.id];
+  card.append(el('h2','',title));
   card.append(el('p','metric-value',format(metric ? available(metric) : null,unit)));
   card.append(el('span','muted',metric?.availability === 'available' ? safeText(metric.source) : t.unavailable)); return card;
 }
@@ -34,12 +37,12 @@ export function renderOverview(snapshot: Snapshot | null, language: Language): H
   for (const [title,items] of [[t.gpu,snapshot?.gpu],[t.battery,snapshot?.batteries]] as const) { const p=panel(title); p.append(el('p','muted',items?.length ? `${items.length} · ${t.notMeasured}` : t.none)); details.append(p); }
   body.append(details); return body;
 }
-export function renderProcesses(snapshot: Snapshot | null, language: Language): HTMLElement {
+export function renderProcesses(snapshot: Snapshot | null, language: Language,liveSnapshot:()=>Snapshot|null=()=>snapshot,afterDraw?:(root:HTMLElement)=>void): HTMLElement {
   const t=messages[language], body=panel(t.processes,t.privacy), input=el('input'); input.type='search';input.maxLength=120;input.placeholder=t.search;input.setAttribute('aria-label',t.search);body.append(input);
   const wrap=el('div','table-wrap'), table=el('table'), head=el('thead'), header=el('tr');
   for (const title of [t.name,t.pid,'CPU',t.ram]) header.append(el('th','',title)); head.append(header); const tbody=el('tbody'); table.append(head,tbody);wrap.append(table);body.append(wrap);
-  const draw=()=>{ tbody.replaceChildren();for (const process of filterProcesses(snapshot?.processes ?? [],input.value)) { const row=el('tr');for (const value of [safeText(process.name),String(process.pid ?? '—'),format(process.cpu_availability==='available'&&typeof process.cpu_percent==='number'?process.cpu_percent:null),format(typeof process.memory_bytes==='number'?process.memory_bytes:null,'bytes')]) row.append(el('td','',value));tbody.append(row); } };
-  input.addEventListener('input',draw);draw();return body;
+  const draw=()=>{ tbody.replaceChildren();for (const process of filterProcesses(liveSnapshot()?.processes ?? [],input.value)) { const row=el('tr');for (const [i,value] of [safeText(process.name),String(process.pid ?? '—'),format(process.cpu_availability==='available'&&typeof process.cpu_percent==='number'?process.cpu_percent:null),format(typeof process.memory_bytes==='number'?process.memory_bytes:null,'bytes')].entries()) {const cell=el('td','',value);if(i>=2)cell.dataset.measureKey=`process:${process.pid}:${i===2?'cpu':'memory'}`;row.append(cell);}tbody.append(row); }afterDraw?.(body); };
+  body.addEventListener('systempulse:refresh',draw);input.addEventListener('input',draw);draw();return body;
 }
 export function renderStatic(page: Key, language: Language): HTMLElement {
   const t=messages[language];

@@ -6,6 +6,9 @@ publish = false
 
 [workspace]
 
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
@@ -15,6 +18,21 @@ systempulse-core = { path = "../../../crates/core" }
 systempulse-collector = { path = "../../../crates/collector" }
 systempulse-alerts = { path = "../../../crates/alerts" }
 serde = { version = "1", features = ["derive"] }
+
+# Security floor for the URL origin recursion fix (RUSTSEC-2026-0592).
+[dev-dependencies]
+url = "=2.5.9"
+
+[target.'cfg(target_os = "linux")'.dev-dependencies]
+glib = "=0.18.5"
+
+# GTK 3 requires glib 0.18; backport the two-line official fix without changing API/version.
+[patch.crates-io]
+glib = { path = "../../../vendor/glib-0.18.5" }
+
+# Exercise the corrected iterator with optimizations, where the UB was reproducible.
+[profile.dev.package.glib]
+opt-level = 2
 
 [lints.rust]
 unsafe_code = "forbid"

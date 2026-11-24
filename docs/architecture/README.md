@@ -12,7 +12,7 @@ Le socle headless (CLI, MCP) ne dépend jamais de Tauri.
 | `systempulse-history` | Historique SQLite local, agrégats seulement | `core`, `rusqlite` |
 | `systempulse-mcp-server` | Serveur MCP local stdio, 10 outils lecture seule | `core`, `collector`, `alerts`, `rmcp`, `tokio` |
 | `systempulse-cli` | Présentation terminal, sortie JSONL | `core`, `collector` |
-| `apps/desktop` | Présentation Tauri 2 / TypeScript (hors workspace) | `core`, `collector`, `alerts`, `tauri` |
+| `apps/desktop` | Dashboard et capsule Tauri 2 / TypeScript (hors workspace), collecteur partagé | `core`, `collector`, `alerts`, `tauri` |
 
 ## Règles de dépendance
 
@@ -36,9 +36,12 @@ Le socle headless (CLI, MCP) ne dépend jamais de Tauri.
 | OS → collector | validation finitude/unités, états explicites, warmup |
 | Collector → UI/IA | données structurées, noms seuls, jamais d'arguments |
 | Client MCP → service | 10 outils fixes, schémas stricts, lecture seule |
-| Webview → Rust | 3 commandes IPC étroites, paramètres validés, CSP restrictive |
+| Webview → Rust | Commandes IPC étroites, fenêtres main/widget vérifiées côté Rust, CSP restrictive ; aucune permission générique shell/fichiers |
 
 Détail des menaces : [modèle de menace](../security/THREAT_MODEL.md).
+
+Capsule, couleurs mesurées, cycle de vie et installation opt-in :
+[étude de conception](WIDGET_DESIGN.md).
 
 ## Décisions
 

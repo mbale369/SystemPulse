@@ -27,7 +27,22 @@ Preuves et limites : [rapport de tests V1](docs/testing/V1_TEST_REPORT.md).
 Suivi actuel : [correctifs et audits de sécurité](docs/testing/SECURITY_FOLLOWUP_2026-11-23.md),
 [matrice de portabilité](docs/development/PORTABILITY.md) et
 [préparation GitHub sans push](docs/development/GITHUB_PREPARATION.md).
-Les tests fonctionnels passent, mais des avis de sécurité Rust restent ouverts.
+Les tests fonctionnels passent. Les vulnérabilités traitées, le rétroportage glib
+et les deux avis de maintenance encore ouverts sont décrits dans le
+[rapport de remédiation actuel](docs/testing/SECURITY_REMEDIATION_2026-11-23.md).
+
+### Capsule de surveillance locale
+
+Une capsule ovale privilégie RAM et température CPU. Un clic déploie CPU/GPU,
+les consommateurs observés et la préparation MCP Claude/Codex, sans connecter
+automatiquement d'agent. Le dashboard et la capsule partagent le même collecteur.
+Le démarrage de la capsule seule à la connexion est proposé avec Oui présélectionné
+dans une question visible et désactivable de l'installateur utilisateur ; aucun
+consentement n'est déduit d'une entrée non interactive absente.
+[Conception, couleurs et limites natives](docs/architecture/WIDGET_DESIGN.md).
+Voir aussi le [rapport de tests du widget](docs/testing/WIDGET_TEST_REPORT_2026-11-23.md).
+
+Dernier lot : [variations visibles, sons discrets, glisser et autostart](docs/testing/MEASUREMENT_SIGNALS_2026-11-23.md).
 
 ## Développement
 

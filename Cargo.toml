@@ -1,6 +1,7 @@
 [workspace]
 members = ["crates/core", "crates/collector", "crates/platforms", "crates/alerts", "crates/mcp-server", "crates/cli", "crates/history"]
 resolver = "3"
+exclude = ["vendor/glib-0.18.5"]
 
 [workspace.package]
 version = "0.1.0"
